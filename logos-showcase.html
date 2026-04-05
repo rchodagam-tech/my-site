@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logo Showcase — Ravi Chodagam</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================
+       BASE
+    ========================================== */
+    :root {
+      --dark:      #080809;
+      --dark-2:    #0f0f11;
+      --light:     #f5f2ed;
+      --light-2:   #eae6df;
+      --gold:      #c4a060;
+      --gold-d:    #a8884a;
+      --text-dark: #ede8df;
+      --text-light: #16161a;
+      --muted-dark: #8a8a90;
+      --muted-light: #5c5c68;
+      --border-dark:  rgba(255,255,255,0.07);
+      --border-light: rgba(0,0,0,0.09);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: 'Jost', 'Helvetica Neue', sans-serif;
+      font-weight: 300;
+      background: #111114;
+      color: #ede8df;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ==========================================
+       HEADER
+    ========================================== */
+    .page-header {
+      padding: 56px 48px 48px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .page-kicker {
+      font-size: 9.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+      display: block;
+    }
+    .page-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 400;
+      font-style: italic;
+      font-size: 32px;
+      color: var(--text-dark);
+      line-height: 1.2;
+    }
+    .page-sub {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted-dark);
+      line-height: 1.6;
+      max-width: 480px;
+    }
+
+    /* ==========================================
+       LAYOUT
+    ========================================== */
+    .showcase {
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 56px;
+    }
+
+    /* ==========================================
+       LOGO BLOCK
+    ========================================== */
+    .logo-block { display: flex; flex-direction: column; gap: 20px; }
+
+    .logo-version {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-badge {
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(196,160,96,0.1);
+      border: 1px solid rgba(196,160,96,0.2);
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+    .logo-desc {
+      font-size: 12px;
+      color: var(--muted-dark);
+      letter-spacing: 0.04em;
+    }
+
+    /* ==========================================
+       PANEL PAIR
+    ========================================== */
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .panel {
+      padding: 64px 56px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 160px;
+      position: relative;
+    }
+
+    /* Dark panel */
+    .panel-dark {
+      background: var(--dark);
+    }
+    .panel-dark::after {
+      content: 'Dark Background';
+      position: absolute;
+      top: 16px; left: 20px;
+      font-size: 8.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+    }
+
+    /* Light panel */
+    .panel-light {
+      background: var(--light);
+    }
+    .panel-light::after {
+      content: 'Light Background';
+      position: absolute;
+      top: 16px; left: 20px;
+      font-size: 8.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.22);
+    }
+
+    /* ==========================================
+       SVG SIZING
+    ========================================== */
+    .panel svg {
+      width: 100%;
+      max-width: 320px;
+      height: auto;
+    }
+
+    /* ==========================================
+       LIGHT-MODE OVERRIDES FOR INLINED SVGs
+       These target the SVG CSS classes directly.
+    ========================================== */
+
+    /* Logo V1 on light background */
+    .panel-light .v1-primary { fill: #16161a; }
+    .panel-light .v1-muted   { fill: #5c5c68; }
+    /* .v1-gold stays #c4a060 — works on both */
+
+    /* Logo V2 on light background */
+    .panel-light .v2-primary { fill: #16161a; }
+    .panel-light .v2-muted   { fill: #5c5c68; }
+    /* .v2-gold stays #c4a060 — works on both */
+    /* Rules stay gold on both */
+
+    /* ==========================================
+       DIVIDER
+    ========================================== */
+    .section-rule {
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* ==========================================
+       NOTES SECTION
+    ========================================== */
+    .notes {
+      padding: 0 48px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .note-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 28px 32px;
+    }
+    .note-card h3 {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+    .note-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .note-card li {
+      font-size: 13px;
+      color: var(--muted-dark);
+      line-height: 1.55;
+      padding-left: 14px;
+      position: relative;
+    }
+    .note-card li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-size: 11px;
+    }
+
+    /* ==========================================
+       RESPONSIVE
+    ========================================== */
+    @media (max-width: 768px) {
+      .page-header, .showcase, .notes { padding: 32px 24px; }
+      .panels { grid-template-columns: 1fr; }
+      .notes { grid-template-columns: 1fr; }
+      .panel { padding: 48px 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="page-header">
+    <span class="page-kicker">Brand Identity</span>
+    <h1 class="page-title">Logo Showcase</h1>
+    <p class="page-sub">
+      Two logo concepts for Ravi Chodagam — each shown on dark and light backgrounds.
+      Gold accent color (#c4a060) holds on both.
+    </p>
+  </header>
+
+  <main class="showcase">
+
+    <!-- ==========================================
+         LOGO V1: MARK + WORDMARK
+    ========================================== -->
+    <section class="logo-block" aria-labelledby="v1-label">
+      <div class="logo-version">
+        <span class="logo-badge" id="v1-label">Logo 1</span>
+        <span class="logo-desc">Mark (ascending bars) + Wordmark — geometric, structured</span>
+      </div>
+
+      <div class="panels">
+
+        <!-- Dark panel: V1 -->
+        <div class="panel panel-dark">
+          <!-- INLINE SVG: logo-v1 -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 56" fill="none" role="img" aria-label="Ravi Chodagam logo on dark background">
+            <title>Ravi Chodagam</title>
+            <rect x="0"  y="39" width="8"  height="2.5" class="v1-gold" fill="#c4a060" opacity="0.28"/>
+            <rect x="0"  y="30" width="14" height="2.5" class="v1-gold" fill="#c4a060" opacity="0.50"/>
+            <rect x="0"  y="21" width="20" height="2.5" class="v1-gold" fill="#c4a060" opacity="0.75"/>
+            <rect x="0"  y="12" width="26" height="2.5" class="v1-gold" fill="#c4a060"/>
+            <line x1="41" y1="8" x2="41" y2="48" stroke="#c4a060" stroke-width="0.75" opacity="0.32"/>
+            <text x="53" y="27"
+                  font-family="'Jost', 'Helvetica Neue', Arial, sans-serif"
+                  font-weight="500" font-size="15" letter-spacing="3.8"
+                  class="v1-primary" fill="#ede8df">RAVI CHODAGAM</text>
+            <text x="54" y="42"
+                  font-family="'Jost', 'Helvetica Neue', Arial, sans-serif"
+                  font-weight="300" font-size="7.5" letter-spacing="2.4"
+                  class="v1-muted" fill="#8a8a90">REVENUE LEADERSHIP · IT SERVICES</text>
+          </svg>
+        </div>
+
+        <!-- Light panel: V1 -->
+        <div class="panel panel-light">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 56" fill="none" role="img" aria-label="Ravi Chodagam logo on light background">
+            <title>Ravi Chodagam</title>
+            <rect x="0"  y="39" width="8"  height="2.5" fill="#c4a060" opacity="0.28"/>
+            <rect x="0"  y="30" width="14" height="2.5" fill="#c4a060" opacity="0.50"/>
+            <rect x="0"  y="21" width="20" height="2.5" fill="#c4a060" opacity="0.75"/>
+            <rect x="0"  y="12" width="26" height="2.5" fill="#c4a060"/>
+            <line x1="41" y1="8" x2="41" y2="48" stroke="#c4a060" stroke-width="0.75" opacity="0.32"/>
+            <text x="53" y="27"
+                  font-family="'Jost', 'Helvetica Neue', Arial, sans-serif"
+                  font-weight="500" font-size="15" letter-spacing="3.8"
+                  class="v1-primary" fill="#16161a">RAVI CHODAGAM</text>
+            <text x="54" y="42"
+                  font-family="'Jost', 'Helvetica Neue', Arial, sans-serif"
+                  font-weight="300" font-size="7.5" letter-spacing="2.4"
+                  class="v1-muted" fill="#5c5c68">REVENUE LEADERSHIP · IT SERVICES</text>
+          </svg>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="section-rule" role="separator"></div>
+
+    <!-- ==========================================
+         LOGO V2: TYPOGRAPHIC
+    ========================================== -->
+    <section class="logo-block" aria-labelledby="v2-label">
+      <div class="logo-version">
+        <span class="logo-badge" id="v2-label">Logo 2</span>
+        <span class="logo-desc">Typographic — serif/sans contrast, no icon</span>
+      </div>
+
+      <div class="panels">
+
+        <!-- Dark panel: V2 -->
+        <div class="panel panel-dark">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 70" fill="none" role="img" aria-label="Ravi Chodagam typographic logo on dark background">
+            <title>Ravi Chodagam</title>
+            <text x="0" y="46"
+                  font-family="'Cormorant Garamond', 'Times New Roman', Georgia, serif"
+                  font-weight="400" font-style="italic" font-size="42"
+                  class="v2-gold" fill="#c4a060">Ravi</text>
+            <line x1="106" y1="10" x2="106" y2="50" stroke="#c4a060" stroke-width="0.85" opacity="0.45"/>
+            <text x="118" y="46"
+                  font-family="'Jost', 'Helvetica Neue', Arial, sans-serif"
+                  font-weight="300" font-size="14" letter-spacing="5.5"
+                  class="v2-primary" fill="#ede8df">CHODAGAM</text>
+            <line x1="0" y1="56" x2="310" y2="56" stroke="#c4a060" stroke-width="0.75" opacity="0.28"/>
+            <text x="0" y="67"
+                  font-family="'Jost', 'Helvetica Neue', Arial, sans-serif"
+                  font-weight="300" font-size="7" letter-spacing="2.6"
+                  class="v2-muted" fill="#7a7a84">REVENUE LEADERSHIP · IT SERVICES</text>
+          </svg>
+        </div>
+
+        <!-- Light panel: V2 -->
+        <div class="panel panel-light">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 70" fill="none" role="img" aria-label="Ravi Chodagam typographic logo on light background">
+            <title>Ravi Chodagam</title>
+            <text x="0" y="46"
+                  font-family="'Cormorant Garamond', 'Times New Roman', Georgia, serif"
+                  font-weight="400" font-style="italic" font-size="42"
+                  class="v2-gold" fill="#c4a060">Ravi</text>
+            <line x1="106" y1="10" x2="106" y2="50" stroke="#c4a060" stroke-width="0.85" opacity="0.45"/>
+            <text x="118" y="46"
+                  font-family="'Jost', 'Helvetica Neue', Arial, sans-serif"
+                  font-weight="300" font-size="14" letter-spacing="5.5"
+                  class="v2-primary" fill="#16161a">CHODAGAM</text>
+            <line x1="0" y1="56" x2="310" y2="56" stroke="#c4a060" stroke-width="0.75" opacity="0.28"/>
+            <text x="0" y="67"
+                  font-family="'Jost', 'Helvetica Neue', Arial, sans-serif"
+                  font-weight="300" font-size="7" letter-spacing="2.6"
+                  class="v2-muted" fill="#5c5c68">REVENUE LEADERSHIP · IT SERVICES</text>
+          </svg>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notes -->
+  <section class="notes" aria-label="Logo design notes">
+
+    <div class="note-card">
+      <h3>Logo 1 — Mark + Wordmark</h3>
+      <ul>
+        <li>Four ascending bars: opacity fades upward to suggest peak trajectory</li>
+        <li>Thin gold hairline separates icon from text — structural, not decorative</li>
+        <li>Jost 500, tracked wide — matches the site's wordmark rhythm</li>
+        <li>Works as standalone mark (just the bars) at very small sizes</li>
+        <li>Tagline optional — drop at small scales</li>
+      </ul>
+    </div>
+
+    <div class="note-card">
+      <h3>Logo 2 — Typographic</h3>
+      <ul>
+        <li>Cormorant Garamond italic — same font as site headlines; signals authority</li>
+        <li>Serif/sans contrast: "Ravi" (warm, humanist) vs "CHODAGAM" (precise, modern)</li>
+        <li>Vertical hairline between names creates visual pause — editorial feel</li>
+        <li>Horizontal rule + tagline anchor the nameplate to a profession</li>
+        <li>No icon needed — the typographic tension is the identity</li>
+      </ul>
+    </div>
+
+  </section>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 70" fill="none" role="img" aria-label="Ravi Chodagam — Revenue Leadership, IT Services">
+  <title>Ravi Chodagam</title>
+  <desc>Typographic logo for Ravi Chodagam, revenue leadership for IT services firms.</desc>
+
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Jost:wght@300&display=swap');
+
+      .v2-gold    { fill: #c4a060; }
+      .v2-primary { fill: #ede8df; }
+      .v2-muted   { fill: #7a7a84; }
+      .v2-sep-v   { stroke: #c4a060; stroke-width: 0.85; }
+      .v2-sep-h   { stroke: #c4a060; stroke-width: 0.75; }
+
+      @media (prefers-color-scheme: light) {
+        .v2-primary { fill: #16161a; }
+        .v2-muted   { fill: #5c5c68; }
+      }
+    </style>
+  </defs>
+
+  <!-- =============================================
+       "Ravi" — Cormorant Garamond italic, gold.
+       Large, elegant, authoritative.
+  ============================================= -->
+  <text
+    x="0" y="46"
+    font-family="'Cormorant Garamond', 'Times New Roman', Georgia, serif"
+    font-weight="400"
+    font-style="italic"
+    font-size="42"
+    class="v2-gold">Ravi</text>
+
+  <!-- =============================================
+       Thin vertical hairline between first and
+       last name — creates visual pause and tension.
+  ============================================= -->
+  <line x1="106" y1="10" x2="106" y2="50" class="v2-sep-v" opacity="0.45"/>
+
+  <!-- =============================================
+       "CHODAGAM" — Jost light, tracked wide, cream.
+       Smaller, precise, counterpart to the serif.
+  ============================================= -->
+  <text
+    x="118" y="46"
+    font-family="'Jost', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-weight="300"
+    font-size="14"
+    letter-spacing="5.5"
+    class="v2-primary">CHODAGAM</text>
+
+  <!-- =============================================
+       Horizontal rule spanning the full name block.
+       Gold, 30% opacity — structural, not decorative.
+  ============================================= -->
+  <line x1="0" y1="56" x2="310" y2="56" class="v2-sep-h" opacity="0.28"/>
+
+  <!-- =============================================
+       Tagline — anchors the name to a profession.
+  ============================================= -->
+  <text
+    x="0" y="67"
+    font-family="'Jost', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-weight="300"
+    font-size="7"
+    letter-spacing="2.6"
+    class="v2-muted">REVENUE LEADERSHIP · IT SERVICES</text>
+
+</svg>

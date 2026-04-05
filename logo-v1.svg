@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 56" fill="none" role="img" aria-label="Ravi Chodagam — Revenue Leadership, IT Services">
+  <title>Ravi Chodagam</title>
+  <desc>Mark and wordmark logo for Ravi Chodagam, revenue leadership for IT services firms.</desc>
+
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;500&display=swap');
+
+      .v1-gold    { fill: #c4a060; }
+      .v1-primary { fill: #ede8df; }
+      .v1-muted   { fill: #8a8a90; }
+      .v1-sep     { stroke: #c4a060; stroke-width: 0.75; }
+
+      @media (prefers-color-scheme: light) {
+        .v1-primary { fill: #16161a; }
+        .v1-muted   { fill: #5c5c68; }
+      }
+    </style>
+  </defs>
+
+  <!-- =============================================
+       MARK: Four ascending horizontal bars.
+       Widths and opacity increase bottom → top,
+       suggesting trajectory and peak performance.
+  ============================================= -->
+  <rect x="0" y="39" width="8"  height="2.5" class="v1-gold" opacity="0.28"/>
+  <rect x="0" y="30" width="14" height="2.5" class="v1-gold" opacity="0.50"/>
+  <rect x="0" y="21" width="20" height="2.5" class="v1-gold" opacity="0.75"/>
+  <rect x="0" y="12" width="26" height="2.5" class="v1-gold"/>
+
+  <!-- Thin vertical separator -->
+  <line x1="41" y1="8" x2="41" y2="48" class="v1-sep" opacity="0.32"/>
+
+  <!-- =============================================
+       WORDMARK: Name + tagline
+  ============================================= -->
+
+  <!-- Primary name -->
+  <text
+    x="53" y="27"
+    font-family="'Jost', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-weight="500"
+    font-size="15"
+    letter-spacing="3.8"
+    class="v1-primary">RAVI CHODAGAM</text>
+
+  <!-- Tagline -->
+  <text
+    x="54" y="42"
+    font-family="'Jost', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-weight="300"
+    font-size="7.5"
+    letter-spacing="2.4"
+    class="v1-muted">REVENUE LEADERSHIP · IT SERVICES</text>
+
+</svg>
