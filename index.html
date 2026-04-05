@@ -398,6 +398,546 @@
     </div>
   </footer>
 
+  <!-- =========================================================
+       WIDGET SYSTEM — Q&A Chat + Proposal Intake
+  ========================================================= -->
+  <style>
+    /* === Tokens for widget (dark panels over light page) ===== */
+    :root {
+      --w-navy:      #0a1628;
+      --w-blue:      #2563eb;
+      --w-blue-h:    #1d4ed8;
+      --w-surface:   #111318;
+      --w-surface-2: #1a1e27;
+      --w-border:    rgba(255,255,255,0.07);
+      --w-text:      #e8e8ec;
+      --w-text-2:    #8a8a96;
+      --w-text-3:    #484856;
+      --w-font:      'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* === Launcher stack ===================================== */
+    #widget-launchers {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      font-family: var(--w-font);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    #widget-launchers.hidden {
+      opacity: 0; pointer-events: none; transform: translateY(8px);
+    }
+
+    /* Primary launcher — Ask me anything */
+    #chat-toggle {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 20px 13px 16px;
+      background: var(--w-navy);
+      color: #fff;
+      border: none; border-radius: 100px;
+      font-family: var(--w-font); font-size: 13px; font-weight: 600;
+      letter-spacing: 0.03em; cursor: pointer; white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(10,22,40,0.35), 0 1px 4px rgba(0,0,0,0.2);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    #chat-toggle:hover {
+      background: #162236;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(10,22,40,0.45), 0 2px 6px rgba(0,0,0,0.2);
+    }
+    #chat-toggle:active { transform: translateY(0); }
+
+    /* Secondary launcher — Get Proposal */
+    #proposal-toggle {
+      display: flex; align-items: center; gap: 9px;
+      padding: 11px 18px 11px 14px;
+      background: var(--w-blue);
+      color: #fff;
+      border: none; border-radius: 100px;
+      font-family: var(--w-font); font-size: 13px; font-weight: 600;
+      letter-spacing: 0.03em; cursor: pointer; white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(37,99,235,0.4), 0 1px 4px rgba(0,0,0,0.15);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    #proposal-toggle:hover {
+      background: var(--w-blue-h);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(37,99,235,0.5), 0 2px 6px rgba(0,0,0,0.15);
+    }
+    #proposal-toggle:active { transform: translateY(0); }
+
+    /* === Shared panel base ================================== */
+    .widget-panel {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      z-index: 10000;
+      width: 360px; max-height: 560px;
+      background: var(--w-surface);
+      border-radius: 16px;
+      display: flex; flex-direction: column; overflow: hidden;
+      font-family: var(--w-font); font-weight: 400;
+      opacity: 0; transform: translateY(12px) scale(0.97);
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      transform-origin: bottom right;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .widget-panel.open {
+      opacity: 1; transform: translateY(0) scale(1); pointer-events: all;
+    }
+    #chat-panel     { border: 1px solid rgba(10,22,40,0.5); }
+    #proposal-panel { border: 1px solid rgba(37,99,235,0.3); }
+
+    /* === Headers ============================================ */
+    .widget-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--w-border);
+      flex-shrink: 0;
+    }
+    .widget-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    #chat-panel .widget-avatar     { background: rgba(10,22,40,0.6);  border: 1px solid rgba(255,255,255,0.12); }
+    #proposal-panel .widget-avatar { background: rgba(37,99,235,0.15); border: 1px solid rgba(37,99,235,0.3); }
+    .widget-header-text { flex: 1; min-width: 0; }
+    .widget-header-name { font-size: 13px; font-weight: 600; color: var(--w-text); letter-spacing: 0.02em; }
+    .widget-header-sub  { font-size: 11px; color: var(--w-text-2); margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+    .chat-status-dot    { width: 6px; height: 6px; border-radius: 50%; background: #4caf7d; flex-shrink: 0; }
+    .widget-close {
+      width: 28px; height: 28px; border-radius: 50%; border: none; background: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--w-text-2);
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .widget-close:hover { background: rgba(255,255,255,0.07); color: var(--w-text); }
+
+    /* === Progress bar (proposal only) ====================== */
+    .proposal-progress {
+      padding: 12px 18px 14px;
+      border-bottom: 1px solid var(--w-border);
+      flex-shrink: 0;
+    }
+    .proposal-progress-row {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    }
+    .proposal-progress-label {
+      font-size: 10.5px; font-weight: 500; color: var(--w-text-2);
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    #proposal-step-label {
+      font-size: 11px; color: var(--w-blue); font-weight: 600;
+      transition: opacity 0.3s;
+    }
+    .proposal-progress-track {
+      height: 3px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden;
+    }
+    #proposal-progress-fill {
+      height: 100%; background: var(--w-blue); border-radius: 3px;
+      width: 0%; transition: width 0.5s ease;
+    }
+
+    /* === Messages =========================================== */
+    .widget-messages {
+      flex: 1; overflow-y: auto;
+      padding: 16px 16px 12px;
+      display: flex; flex-direction: column; gap: 12px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.08) transparent;
+    }
+    .widget-messages::-webkit-scrollbar { width: 4px; }
+    .widget-messages::-webkit-scrollbar-track { background: transparent; }
+    .widget-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+    .chat-msg {
+      display: flex; flex-direction: column; max-width: 88%;
+      animation: msgIn 0.22s ease both;
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .chat-msg.user      { align-self: flex-end;  align-items: flex-end; }
+    .chat-msg.assistant { align-self: flex-start; align-items: flex-start; }
+
+    .chat-bubble {
+      padding: 10px 14px; border-radius: 14px;
+      font-size: 13.5px; line-height: 1.55; color: var(--w-text);
+    }
+    .chat-msg.user .chat-bubble {
+      background: var(--w-navy); color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    #chat-messages .chat-msg.assistant .chat-bubble {
+      background: var(--w-surface-2);
+      border: 1px solid var(--w-border);
+      border-bottom-left-radius: 4px;
+    }
+    #proposal-messages .chat-msg.assistant .chat-bubble {
+      background: #131a2a;
+      border: 1px solid rgba(37,99,235,0.15);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Typing indicator */
+    .typing-indicator { display: flex; align-items: center; gap: 5px; padding: 12px 14px; }
+    .typing-dot {
+      width: 6px; height: 6px; border-radius: 50%; opacity: 0.4;
+      animation: typingPulse 1.2s ease-in-out infinite;
+    }
+    #chat-messages .typing-dot     { background: #fff; }
+    #proposal-messages .typing-dot { background: var(--w-blue); }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingPulse {
+      0%, 80%, 100% { opacity: 0.4; transform: scale(1); }
+      40%           { opacity: 1;   transform: scale(1.25); }
+    }
+
+    /* === Input area ========================================= */
+    .widget-input-area {
+      padding: 12px 14px 16px;
+      border-top: 1px solid var(--w-border);
+      display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0;
+    }
+    .widget-input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+      padding: 10px 13px;
+      font-family: var(--w-font); font-size: 13px; font-weight: 400;
+      color: var(--w-text); resize: none;
+      min-height: 40px; max-height: 120px; line-height: 1.5;
+      outline: none; transition: border-color 0.2s; overflow-y: auto;
+    }
+    .widget-input::placeholder { color: var(--w-text-3); }
+    #chat-input:focus     { border-color: rgba(255,255,255,0.22); }
+    #proposal-input:focus { border-color: rgba(37,99,235,0.45); }
+    .widget-input:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .widget-send {
+      width: 38px; height: 38px; border-radius: 10px; border: none;
+      color: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: background 0.15s, transform 0.15s, opacity 0.15s;
+      opacity: 0.5;
+    }
+    #chat-send     { background: var(--w-navy); }
+    #proposal-send { background: var(--w-blue); }
+    .widget-send:not(:disabled) { opacity: 1; }
+    #chat-send:not(:disabled):hover     { background: #162236; transform: scale(1.06); }
+    #proposal-send:not(:disabled):hover { background: var(--w-blue-h); transform: scale(1.06); }
+    .widget-send:not(:disabled):active  { transform: scale(0.96); }
+    .widget-send:disabled { cursor: not-allowed; }
+
+    @media (max-width: 440px) {
+      #widget-launchers { bottom: 16px; right: 16px; }
+      .widget-panel { width: calc(100vw - 32px); bottom: 16px; right: 16px; }
+    }
+  </style>
+
+  <!-- === LAUNCHERS ======================================== -->
+  <div id="widget-launchers">
+    <button id="proposal-toggle" aria-expanded="false" aria-controls="proposal-panel">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M5 5h6M5 8h6M5 11h3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      Get Proposal
+    </button>
+    <button id="chat-toggle" aria-expanded="false" aria-controls="chat-panel">
+      <svg width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+        <path d="M16 1H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11l4 4V2a1 1 0 0 0-1-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+      </svg>
+      Ask me anything
+    </button>
+  </div>
+
+  <!-- === Q&A CHAT PANEL =================================== -->
+  <div id="chat-panel" class="widget-panel" aria-hidden="true" role="dialog" aria-labelledby="chat-header-name">
+    <div class="widget-header">
+      <div class="widget-avatar" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zm0 7c2.76 0 5 1.12 5 2.5v.5H3v-.5C3 10.12 5.24 9 8 9z" fill="#e8e8ec"/>
+        </svg>
+      </div>
+      <div class="widget-header-text">
+        <div class="widget-header-name" id="chat-header-name">Ravi's Assistant</div>
+        <div class="widget-header-sub">
+          <span class="chat-status-dot" aria-hidden="true"></span>
+          <span>Online — ask me anything</span>
+        </div>
+      </div>
+      <button class="widget-close" id="chat-close" aria-label="Close chat">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div id="chat-messages" class="widget-messages" role="log" aria-label="Conversation" aria-live="polite">
+      <div class="chat-msg assistant">
+        <div class="chat-bubble">Hi — I'm Ravi's assistant. Ask me about his background, what he takes on, or how to get in touch.</div>
+      </div>
+    </div>
+    <div class="widget-input-area">
+      <textarea id="chat-input" class="widget-input" placeholder="Type a message…" rows="1"
+        aria-label="Type your message" autocomplete="off" spellcheck="false"></textarea>
+      <button id="chat-send" class="widget-send" disabled aria-label="Send message">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14 8L2 2l2.5 6L2 14l12-6z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- === PROPOSAL PANEL =================================== -->
+  <div id="proposal-panel" class="widget-panel" aria-hidden="true" role="dialog" aria-labelledby="proposal-header-name">
+    <div class="widget-header">
+      <div class="widget-avatar" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="1" width="12" height="14" rx="1.5" stroke="#60a5fa" stroke-width="1.3"/>
+          <path d="M5 5h6M5 8h6M5 11h3.5" stroke="#60a5fa" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="widget-header-text">
+        <div class="widget-header-name" id="proposal-header-name">Get a Proposal</div>
+        <div class="widget-header-sub">
+          <span class="chat-status-dot" aria-hidden="true"></span>
+          <span>6 quick questions</span>
+        </div>
+      </div>
+      <button class="widget-close" id="proposal-close" aria-label="Close proposal">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="proposal-progress">
+      <div class="proposal-progress-row">
+        <span class="proposal-progress-label">Proposal Intake</span>
+        <span id="proposal-step-label">Step 1 of 6</span>
+      </div>
+      <div class="proposal-progress-track">
+        <div id="proposal-progress-fill"></div>
+      </div>
+    </div>
+    <div id="proposal-messages" class="widget-messages" role="log" aria-label="Proposal conversation" aria-live="polite">
+    </div>
+    <div class="widget-input-area" id="proposal-input-area">
+      <textarea id="proposal-input" class="widget-input" placeholder="Type your answer…" rows="1"
+        aria-label="Type your answer" autocomplete="off" spellcheck="false"></textarea>
+      <button id="proposal-send" class="widget-send" disabled aria-label="Send answer">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14 8L2 2l2.5 6L2 14l12-6z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- === WIDGET SCRIPTS =================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      var launchers        = document.getElementById('widget-launchers');
+      var chatPanel        = document.getElementById('chat-panel');
+      var proposalPanel    = document.getElementById('proposal-panel');
+      var chatToggle       = document.getElementById('chat-toggle');
+      var chatClose        = document.getElementById('chat-close');
+      var chatMessages     = document.getElementById('chat-messages');
+      var chatInput        = document.getElementById('chat-input');
+      var chatSend         = document.getElementById('chat-send');
+      var proposalToggle   = document.getElementById('proposal-toggle');
+      var proposalClose    = document.getElementById('proposal-close');
+      var proposalMessages = document.getElementById('proposal-messages');
+      var proposalInput    = document.getElementById('proposal-input');
+      var proposalSend     = document.getElementById('proposal-send');
+      var progressFill     = document.getElementById('proposal-progress-fill');
+      var stepLabel        = document.getElementById('proposal-step-label');
+
+      var chatHistory      = [];
+      var proposalHistory  = [];
+      var proposalStarted  = false;
+      var proposalDone     = false;
+
+      function openChat() {
+        launchers.classList.add('hidden');
+        chatPanel.classList.add('open');
+        chatPanel.removeAttribute('aria-hidden');
+        chatToggle.setAttribute('aria-expanded', 'true');
+        setTimeout(function () { chatInput.focus(); }, 260);
+      }
+      function closeChat() {
+        chatPanel.classList.remove('open');
+        chatPanel.setAttribute('aria-hidden', 'true');
+        chatToggle.setAttribute('aria-expanded', 'false');
+        launchers.classList.remove('hidden');
+      }
+      function openProposal() {
+        launchers.classList.add('hidden');
+        proposalPanel.classList.add('open');
+        proposalPanel.removeAttribute('aria-hidden');
+        proposalToggle.setAttribute('aria-expanded', 'true');
+        if (!proposalStarted) { proposalStarted = true; startIntake(); }
+        else if (!proposalDone) { setTimeout(function () { proposalInput.focus(); }, 260); }
+      }
+      function closeProposal() {
+        proposalPanel.classList.remove('open');
+        proposalPanel.setAttribute('aria-hidden', 'true');
+        proposalToggle.setAttribute('aria-expanded', 'false');
+        launchers.classList.remove('hidden');
+      }
+
+      chatToggle.addEventListener('click', openChat);
+      chatClose.addEventListener('click', closeChat);
+      proposalToggle.addEventListener('click', openProposal);
+      proposalClose.addEventListener('click', closeProposal);
+
+      function addBubble(container, role, text) {
+        var msg = document.createElement('div');
+        msg.className = 'chat-msg ' + role;
+        var bub = document.createElement('div');
+        bub.className = 'chat-bubble';
+        bub.textContent = text;
+        msg.appendChild(bub);
+        container.appendChild(msg);
+        container.scrollTop = container.scrollHeight;
+      }
+      function showTyping(container, id) {
+        var msg = document.createElement('div');
+        msg.className = 'chat-msg assistant'; msg.id = id;
+        var bub = document.createElement('div'); bub.className = 'chat-bubble';
+        var ind = document.createElement('div'); ind.className = 'typing-indicator';
+        ind.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+        bub.appendChild(ind); msg.appendChild(bub); container.appendChild(msg);
+        container.scrollTop = container.scrollHeight;
+      }
+      function hideTyping(id) { var el = document.getElementById(id); if (el) el.remove(); }
+
+      function callAPI(messages, onSuccess, onError) {
+        fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: messages })
+        }).then(function (r) { return r.json(); }).then(onSuccess).catch(onError);
+      }
+
+      /* === Q&A CHAT ======================================= */
+      chatInput.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        chatSend.disabled = this.value.trim() === '';
+      });
+      chatInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!chatSend.disabled) sendChat(); }
+      });
+      chatSend.addEventListener('click', sendChat);
+
+      function sendChat() {
+        var text = chatInput.value.trim(); if (!text) return;
+        addBubble(chatMessages, 'user', text);
+        chatHistory.push({ role: 'user', content: text });
+        chatInput.value = ''; chatInput.style.height = 'auto'; chatSend.disabled = true;
+        showTyping(chatMessages, 'chat-typing');
+        callAPI(chatHistory,
+          function (data) {
+            hideTyping('chat-typing');
+            var reply = data.reply || "I couldn't get a response. Please try again.";
+            addBubble(chatMessages, 'assistant', reply);
+            chatHistory.push({ role: 'assistant', content: reply });
+            chatInput.focus();
+          },
+          function () {
+            hideTyping('chat-typing');
+            addBubble(chatMessages, 'assistant', "Something went wrong. Try again or use the contact form below.");
+            chatInput.focus();
+          }
+        );
+      }
+
+      /* === PROPOSAL INTAKE ================================ */
+      function updateProgress(step) {
+        progressFill.style.width = Math.round((step / 6) * 100) + '%';
+        stepLabel.textContent = 'Step ' + step + ' of 6';
+      }
+      function lockProposal() {
+        proposalDone = true;
+        proposalInput.disabled = true; proposalSend.disabled = true;
+        progressFill.style.width = '100%'; stepLabel.textContent = 'Complete';
+      }
+      function startIntake() {
+        var trigger = "I'd like to get a proposal.";
+        proposalHistory.push({ role: 'user', content: trigger });
+        showTyping(proposalMessages, 'proposal-typing');
+        callAPI(proposalHistory,
+          function (data) {
+            hideTyping('proposal-typing');
+            var reply = data.reply || "Let's get started.";
+            addBubble(proposalMessages, 'assistant', reply);
+            proposalHistory.push({ role: 'assistant', content: reply });
+            if (data.intake_step) updateProgress(data.intake_step);
+            if (data.intake_complete) { handleComplete(data); }
+            else { setTimeout(function () { proposalInput.focus(); }, 100); }
+          },
+          function () {
+            hideTyping('proposal-typing');
+            addBubble(proposalMessages, 'assistant', "Something went wrong. Please close and try again.");
+          }
+        );
+      }
+      proposalInput.addEventListener('input', function () {
+        if (proposalDone) return;
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        proposalSend.disabled = this.value.trim() === '';
+      });
+      proposalInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!proposalSend.disabled) sendProposal(); }
+      });
+      proposalSend.addEventListener('click', sendProposal);
+
+      function sendProposal() {
+        if (proposalDone) return;
+        var text = proposalInput.value.trim(); if (!text) return;
+        addBubble(proposalMessages, 'user', text);
+        proposalHistory.push({ role: 'user', content: text });
+        proposalInput.value = ''; proposalInput.style.height = 'auto'; proposalSend.disabled = true;
+        showTyping(proposalMessages, 'proposal-typing');
+        callAPI(proposalHistory,
+          function (data) {
+            hideTyping('proposal-typing');
+            var reply = data.reply || "Got it — one more question.";
+            addBubble(proposalMessages, 'assistant', reply);
+            proposalHistory.push({ role: 'assistant', content: reply });
+            if (data.intake_step) updateProgress(data.intake_step);
+            if (data.intake_complete) { handleComplete(data); }
+            else { proposalInput.focus(); }
+          },
+          function () {
+            hideTyping('proposal-typing');
+            addBubble(proposalMessages, 'assistant', "Something went wrong. Please try again.");
+            proposalInput.focus();
+          }
+        );
+      }
+      function handleComplete(data) {
+        lockProposal();
+        if (data.intake_data) {
+          fetch('/api/generate-proposal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ intake_data: data.intake_data, conversation: proposalHistory })
+          }).catch(function (e) { console.warn('generate-proposal:', e); });
+        }
+      }
+
+    })();
+  </script>
+
+  <!-- Mobile nav toggle -->
   <script>
     // Mobile nav toggle
     const toggle = document.getElementById('navToggle');
